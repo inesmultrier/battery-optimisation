@@ -258,30 +258,28 @@ class HouseSystem:
         residual_battery_energy = battery_discharge_size
 
         if residual_battery_energy > 0:
-            if current_controlled_load_consumption > 0:
-                if residual_battery_energy < current_controlled_load_consumption:
-                    residual_controlled_load_consumption = (
-                        current_controlled_load_consumption - residual_battery_energy
-                    )
-                    residual_battery_energy = 0
-                else:
-                    residual_controlled_load_consumption = 0
-                    residual_battery_energy -= current_controlled_load_consumption
-
-            if (
-                current_general_electricity_consumption > 0
-                and residual_battery_energy > 0
-            ):
+            if current_general_electricity_consumption > 0:
                 if residual_battery_energy < current_general_electricity_consumption:
                     residual_general_electricity_consumption = (
-                        current_general_electricity_consumption
-                        - residual_battery_energy
+                        current_general_electricity_consumption - residual_battery_energy
                     )
                     residual_battery_energy = 0
                 else:
                     residual_general_electricity_consumption = 0
                     residual_battery_energy -= current_general_electricity_consumption
 
+            if (
+                current_controlled_load_consumption > 0
+                and residual_battery_energy > 0
+            ):
+                if residual_battery_energy < current_controlled_load_consumption:
+                    residual_controlled_load_consumption = (
+                            current_controlled_load_consumption - residual_battery_energy
+                    )
+                    residual_battery_energy = 0
+                else:
+                    residual_controlled_load_consumption = 0
+                    residual_battery_energy -= current_controlled_load_consumption
         return (
             residual_general_electricity_consumption,
             residual_controlled_load_consumption,
