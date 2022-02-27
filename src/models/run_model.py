@@ -1,6 +1,6 @@
 import gym
 from pathlib import Path
-from src.models.battery_model import HouseSystemFactory
+from battery_model import HouseSystemFactory
 import pandas as pd
 from ray import tune
 import ray
@@ -88,11 +88,11 @@ if __name__ == "__main__":
 
     config = {
         "env": BatteryEnv,
-        "lr": tune.uniform(1e-7, 1e-1),  # try different lrs
-        "actor_hiddens": tune.grid_search([[200, 200], [300, 300], [400, 400]]),
-        "critic_hiddens": tune.grid_search(
-            [[200, 200], [300, 300], [400, 400], [500, 500]]
-        ),
+        "lr": 0.0297, #tune.uniform(1e-7, 1e-1),  # try different lrs
+        "actor_hiddens":[200, 200], # tune.grid_search([[200, 200], [300, 300], [400, 400]]),
+        "critic_hiddens": [300, 300],#tune.grid_search(
+           # [[200, 200], [300, 300], [400, 400], [500, 500]]
+        #),
         "num_workers": 1,  # parallelism,
         "timesteps_per_iteration": 2500,
         "env_config": {

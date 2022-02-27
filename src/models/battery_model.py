@@ -22,18 +22,21 @@ class Battery:
             self.current_charge += charge_size
             return 0
         else:
-            residual_energy = self.battery_size - self.current_charge
+            # residual is the energy we couldn't feed to the battery :
+            # the difference between the intended charge and the available space
+            residual_energy = charge_size - (self.battery_size - self.current_charge)
             self.current_charge = self.battery_size
             return residual_energy
 
     def discharge(self, discharge_size):
         if self.current_charge >= -discharge_size:
             self.current_charge += discharge_size
-            return -discharge_size
+            return 0
         elif self.current_charge < -discharge_size:
+            # return the energy deficit remaining from insufficient charge
             residual_energy = self.current_charge + discharge_size
             self.current_charge = 0
-            return -residual_energy
+            return residual_energy
         else:
             return 0
 
@@ -217,7 +220,7 @@ class HouseSystem:
     ):
         if charge_solar < current_solar:
             residual_battery_solar = self.battery.use_battery(charge_solar)
-            remaining_solar = current_solar - (charge_solar - residual_battery_solar)
+            remaining_solar = current_solar - charge_solar
         else:
             residual_battery_solar = self.battery.use_battery(current_solar)
             remaining_solar = 0
@@ -229,15 +232,16 @@ class HouseSystem:
         else:
             residual_battery_load = 0
 
+        # Discharge battery
+        residual_battery_discharge = self.battery.use_battery(-discharge_size)
+
         input_energy = (
             residual_battery_solar
             + residual_battery_load
             + remaining_solar
             + discharge_size
+            + residual_battery_discharge  # <0
         )
-
-        # Discharge battery
-        self.battery.use_battery(-discharge_size)
 
         return input_energy, current_controlled_load_consumption
 
